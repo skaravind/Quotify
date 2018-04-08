@@ -10,8 +10,10 @@
   </form>
 
   {% if uploaded_file_url %}
+  {% load staticfiles %}
+    <img src="{{uploaded_file_url}}" alt="image" width="250" height="250" />
   	<p>Predicted object: <span style="color: green">{{prediction}}</span></p>
   	<p><h2>Quote:</h2></p>
-    <p><h3>"{{first}}<span style="color: green"> {{keyword}} </span>{{second}}"</h3><h4>-{{author}}</h4></p>
+    <p><h3>"{{first}}<span style="color: green"> {{keyword}}</span>{{second}}"</h3><h4>-{{author}}</h4></p>
   {% endif %}
 {% endblock %}

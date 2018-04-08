@@ -23,6 +23,7 @@ def home(request):
 	result = ["Couldn't ","Quotify"," this image","S K Aravind"]
 	prediction = 'Nothing'
 	if request.method == 'POST':
+		cleanup()
 		try:
 			request.FILES['image']
 		except:
@@ -36,23 +37,29 @@ def home(request):
 		filename = fs.save(myfile.name, myfile)
 		fname = myfile.name
 		uploaded_file_url = fs.url(filename)
-		if not (fname.endswith('.jpg') or fname.endswith('.jpeg')):
-			pass
+		if not (fname.endswith('.jpg') or fname.endswith('.jpeg') or fname.endswith('.JPG')):
+			if (fname.endswith('.PNG') or fname.endswith('.png')):
+				img = img = Image.open('media/'+myfile.name).resize((224,224))
+				img = np.array(img).astype('float64')
+				img = img[:,:,:3]
+				img = np.expand_dims(img, axis=0)
+				img = preprocess_input(img)
+			else:
+				pass
 		else:
 			img = Image.open('media/'+myfile.name).resize((224,224))
 			img = np.array(img).astype('float64')
 			img = np.expand_dims(img, axis=0)
 			img = preprocess_input(img)
-			try:
-				preds = model.predict(img)
-				prediction = decode_predictions(preds, top=1)[0][0][1].replace("_"," ")
-				result = quotify(prediction)
-				print(prediction)
-				if result == 0:
-					result = ["Couldn't ","Quotify"," this image","S K Aravind"]
-			except:
+		try:
+			preds = model.predict(img)
+			prediction = decode_predictions(preds, top=1)[0][0][1].replace("_"," ").replace("-"," ")
+			result = quotify(prediction)
+			print(prediction)
+			if result == 0:
 				result = ["Couldn't ","Quotify"," this image","S K Aravind"]
-		cleanup()
+		except:
+			result = ["Couldn't ","Quotify"," this image","S K Aravind"]
 		K.clear_session()
 		return render(request, 'detection/home.html', {
 			'uploaded_file_url': uploaded_file_url,
@@ -62,6 +69,7 @@ def home(request):
 			'author' : result[3],
 			'prediction' : prediction
 		})
+	K.clear_session()
 	return render(request, 'detection/home.html')
 
 
