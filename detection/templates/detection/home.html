@@ -1,0 +1,17 @@
+{% extends 'detection/base.html' %}
+
+{% load static %}
+
+{% block content %}
+	<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="image" accept="image/*">
+    <button type="submit">Quotify!</button>
+  </form>
+
+  {% if uploaded_file_url %}
+  	<p>Predicted object: <span style="color: green">{{prediction}}</span></p>
+  	<p><h2>Quote:</h2></p>
+    <p><h3>"{{first}}<span style="color: green"> {{keyword}} </span>{{second}}"</h3><h4>-{{author}}</h4></p>
+  {% endif %}
+{% endblock %}
